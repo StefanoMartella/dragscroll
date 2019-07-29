@@ -1,9 +1,9 @@
 /**
  * @fileoverview dragscroll - scroll area by dragging
  * @version 0.0.8
- * 
+ *
  * @license MIT, see http://github.com/asvd/dragscroll
- * @copyright 2015 asvd <heliosframework@gmail.com> 
+ * @copyright 2015 asvd <heliosframework@gmail.com>
  */
 
 
@@ -58,13 +58,17 @@
                 );
 
                 _window[addEventListener](
-                    mouseup, cont.mu = function() {pushed = 0;}, 0
+                    mouseup, cont.mu = function() {
+                        pushed = 0;
+                        setTimeout(function(){ el.classList.remove("dragging"); }, 100);
+                    }, 0
                 );
 
                 _window[addEventListener](
                     mousemove,
                     cont.mm = function(e) {
                         if (pushed) {
+                            el.classList.add("dragging");
                             (scroller = el.scroller||el).scrollLeft -=
                                 newScrollX = (- lastClientX + (lastClientX=e.clientX));
                             scroller.scrollTop -=
@@ -76,11 +80,10 @@
                         }
                     }, 0
                 );
-             })(dragged[i++]);
+            })(dragged[i++]);
         }
     }
 
-      
     if (_document.readyState == 'complete') {
         reset();
     } else {
@@ -90,3 +93,15 @@
     exports.reset = reset;
 }));
 
+const scrollableElements = document.getElementsByClassName("dragscroll");
+
+const preventClickEvent = function(current) {
+    if(current.closest('.dragscroll').classList.contains('dragging')){
+        event.preventDefault();
+        return false;
+    }
+};
+
+for (let i = 0; i < scrollableElements.length; i++) {
+    scrollableElements[i].addEventListener('click', function(){ preventClickEvent(scrollableElements[i]) }, false);
+}
